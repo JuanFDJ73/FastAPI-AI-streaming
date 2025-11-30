@@ -1,2 +1,32 @@
-venv
+# Entornos
+venv/
+.venv/
+env/
+ENV/
+
+# Variables de entorno
 .env
+.env.*
+!.env.example
+
+# Python cache/bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Herramientas/tests
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Paquetes y builds
+*.egg-info/
+dist/
+build/
+
+# IDE/OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
