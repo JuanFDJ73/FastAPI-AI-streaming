@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models.chat_models import ChatRequest, ChatResponse
+from services.chat_service import ChatService
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -8,7 +9,6 @@ async def chat_basic(body: ChatRequest):
     if not body.message:
         raise HTTPException(status_code=400, detail="Message cannot be empty")
     
-    # Respuesta temporal (placeholder)
-    bot_reply = f"Recibí tu mensaje: {body.message}"
+    reply = await ChatService.generate_basic_reply(body.message)
 
-    return ChatResponse(response=bot_reply)
+    return ChatResponse(response=reply)
