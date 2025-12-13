@@ -1,9 +1,18 @@
-function App() {
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+
+import "./App.css";
+
+export default function App() {
   return (
-    <div className="App">
-      <h1>Welcome to the FastAPI and React Application</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
