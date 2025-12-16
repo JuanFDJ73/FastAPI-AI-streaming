@@ -10,6 +10,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 class SignupRequest(BaseModel):
+    name: str | None = None
     email: str
     password: str
 
@@ -32,8 +33,9 @@ async def signup(data: SignupRequest):
     if data.email in fake_users_db:
         raise HTTPException(status_code=400, detail="El usuario ya existe")
     
-    fake_users_db[data.email] = {"password": data.password}
-    return {"message": "Usuario creado", "email": data.email}
+    # Almacenar usuario simulado
+    fake_users_db[data.email] = {"password": data.password, "name": (data.name or None)}
+    return {"message": "Usuario creado", "email": data.email, "name": data.name}
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -69,9 +71,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     if user is None:
         raise HTTPException(status_code=401, detail="Usuario no encontrado")
 
-    return {"email": email}
+    # include stored name if present
+    return {"email": email, "name": user.get("name")}
 
 
 @router.get("/verify-token")
 async def read_me(current_user: dict = Depends(get_current_user)):
+    return {"user": current_user}
+
+
+@router.get("/me")
+async def me(current_user: dict = Depends(get_current_user)):
     return {"user": current_user}

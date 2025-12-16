@@ -1,15 +1,42 @@
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+const API_URL = (import.meta?.env?.VITE_API_URL || "http://localhost:8000").replace(/\/$/, "");
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+}
 
-export async function apiPost(path, data) {
-  const res = await fetch(`${VITE_API_URL}${path}`, {
+async function handleResponse(res) {
+  const contentType = res.headers.get("content-type") || "";
+  let body = null;
+  if (contentType.includes("application/json")) {
+    body = await res.json();
+  } else {
+    body = await res.text();
+  }
+  if (!res.ok) {
+    const err = new Error(body?.detail || body || res.statusText || "HTTP error");
+    err.status = res.status;
+    err.body = body;
+    throw err;
+  }
+  return body;
+}
+
+export async function apiPost(path, data, { auth = false } = {}) {
+  const headers = auth ? getAuthHeaders() : { "Content-Type": "application/json" };
+  const res = await fetch(`${API_URL}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(data),
   });
-  return res.json();
+  return handleResponse(res);
 }
 
-export async function apiGet(path) {
-  const res = await fetch(`${VITE_API_URL}${path}`);
-  return res.json();
+export async function apiGet(path, { auth = false } = {}) {
+  const headers = auth ? getAuthHeaders() : undefined;
+  const res = await fetch(`${API_URL}${path}`, { headers });
+  return handleResponse(res);
 }
+
+export { API_URL };
