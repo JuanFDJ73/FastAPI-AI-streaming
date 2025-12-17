@@ -1,6 +1,8 @@
+from core.openai_client import OpenAIClient
+
 class ChatService:
+    _openai_client = OpenAIClient()
 
     @staticmethod
     async def generate_basic_reply(message: str) -> str:
-        # Lógica temporal mientras integramos OpenAI
-        return f"Recibí tu mensaje (ChatService): {message}"
+        return await ChatService._openai_client.generate_response(message)
