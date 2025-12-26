@@ -16,6 +16,23 @@
   color: var(--muted);
 }
 
+/* prueba */
+.test-btns{
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
+
+.chat-btn{
+  margin-top: 12px;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
 .logout-btn{
   margin-top: 12px;
   padding: 0.6rem 1rem;

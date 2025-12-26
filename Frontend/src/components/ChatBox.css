@@ -1,0 +1,29 @@
+.chat-box {
+  font-family: inherit;
+}
+.chat-messages {
+  min-height: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+}
+.chat-form {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+.chat-input {
+  width: 80%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.chat-send {
+  padding: 8px 12px;
+}
+.chat-message.user {
+  text-align: right;
+}
+.chat-typing {
+  font-style: italic;
+  color: #666;
+}

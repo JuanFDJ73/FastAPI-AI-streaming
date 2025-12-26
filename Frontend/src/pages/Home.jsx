@@ -85,7 +85,11 @@ export default function Home() {
         </p>
       )}
 
-      <div>
+      <div className="test-btns">
+        <button className="chat-btn" onClick={() => navigate("/chat")}>
+          Ir al Chat IA
+        </button>
+
         <button className="logout-btn" onClick={handleLogout}>
           Cerrar sesión
         </button>
