@@ -39,15 +39,16 @@ export async function apiGet(path, { auth = false } = {}) {
   return handleResponse(res);
 }
 
-export async function apiPostStream(path, data, { auth = false } = {}) {
+export async function apiPostStream(path, data, { auth = false, signal } = {}) {
   const headers = auth
-    ? { ...getAuthHeaders() }
+    ? getAuthHeaders()
     : { "Content-Type": "application/json" };
 
   const res = await fetch(`${API_URL}${path}`, {
     method: "POST",
     headers,
     body: JSON.stringify(data),
+    signal,
   });
 
   if (!res.ok || !res.body) {

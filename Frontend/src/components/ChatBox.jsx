@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { apiPost } from "../api/api";
 import "./ChatBox.css";
 
@@ -7,9 +7,19 @@ export default function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const abortRef = useRef(null);
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!message.trim() || loading) return;
+
+    // Cancelar stream anterior si existe
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     const userMessage = message;
     setMessage("");
@@ -25,7 +35,7 @@ export default function ChatBox() {
       const reader = await apiPostStream(
         "/chat/stream",
         { message: userMessage },
-        { auth: true }
+        { auth: true, signal: controller.signal }
       );
 
       const decoder = new TextDecoder("utf-8");
@@ -43,14 +53,17 @@ export default function ChatBox() {
         });
       }
     } catch (err) {
-      setMessages((prev) => {
-        const updated = [...prev];
-        updated[updated.length - 1].content =
-          "Error durante el streaming.";
-        return updated;
-      });
+      if (err.name !== "AbortError") {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].content =
+            "Streaming interrumpido por error.";
+          return updated;
+        });
+      }
     } finally {
       setLoading(false);
+      abortRef.current = null;
     }
   };
 
