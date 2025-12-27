@@ -39,4 +39,22 @@ export async function apiGet(path, { auth = false } = {}) {
   return handleResponse(res);
 }
 
+export async function apiPostStream(path, data, { auth = false } = {}) {
+  const headers = auth
+    ? { ...getAuthHeaders() }
+    : { "Content-Type": "application/json" };
+
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok || !res.body) {
+    throw new Error("Streaming no soportado");
+  }
+
+  return res.body.getReader();
+}
+
 export { API_URL };

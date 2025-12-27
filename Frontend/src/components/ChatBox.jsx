@@ -13,20 +13,42 @@ export default function ChatBox() {
 
     const userMessage = message;
     setMessage("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
-
     setLoading(true);
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: userMessage },
+      { role: "assistant", content: "" },
+    ]);
+
     try {
-      const res = await apiPost("/chat", { message: userMessage }, { auth: true });
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: res.response },
-      ]);
+      const reader = await apiPostStream(
+        "/chat/stream",
+        { message: userMessage },
+        { auth: true }
+      );
+
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1].content += chunk;
+          return updated;
+        });
+      }
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Error al obtener respuesta." },
-      ]);
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1].content =
+          "Error durante el streaming.";
+        return updated;
+      });
     } finally {
       setLoading(false);
     }
