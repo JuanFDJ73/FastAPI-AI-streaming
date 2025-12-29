@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { apiPost } from "../api/api";
+import { apiPostStream } from "../api/api";
 import "./ChatBox.css";
 
 export default function ChatBox() {

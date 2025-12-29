@@ -74,3 +74,9 @@ async def mock_streaming_response(
         yield chunk
 
     await producer_task
+
+# Mock simple streaming without advanced features
+async def mock_streaming_response(text: str, delay: float = 0.05):
+    for char in text:
+        yield char
+        await asyncio.sleep(delay)
