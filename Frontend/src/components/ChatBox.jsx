@@ -40,6 +40,33 @@ export default function ChatBox() {
 
       const decoder = new TextDecoder("utf-8");
 
+      // Función para fusionar fragmentos de texto con superposición
+      const mergeChunk = (existing, chunk) => {
+        if (!existing) return chunk;
+        if (chunk === existing) return existing;
+        130
+
+        // Si el fragmento entrante contiene el texto existente completo,
+        // simplemente devuélvalo.
+        if (chunk.includes(existing)) return chunk;
+
+        // Si el texto existente contiene el fragmento entrante completo,
+        // simplemente ignórelo.
+        if (existing.includes(chunk)) return existing;
+
+        // Buscar la superposición máxima al final del texto existente
+        const maxCheck = Math.min(100, chunk.length, Math.floor(existing.length / 2));
+        for (let i = maxCheck; i > 0; i--) {
+          if (existing.endsWith(chunk.slice(0, i))) {
+            return existing + chunk.slice(i);
+          }
+        }
+
+        // Si no hay superposición, simplemente concatene y limpie espacios múltiples
+        const merged = existing + chunk;
+        return merged.replace(/(\s){2,}/g, " ");
+      };
+
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -48,7 +75,8 @@ export default function ChatBox() {
 
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1].content += chunk;
+          const last = updated[updated.length - 1];
+          last.content = mergeChunk(last.content, chunk);
           return updated;
         });
       }
