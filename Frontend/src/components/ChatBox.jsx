@@ -1,5 +1,9 @@
 import { useRef, useState } from "react";
 import { apiPostStream } from "../api/api";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import "./ChatBox.css";
 
 export default function ChatBox() {
@@ -43,28 +47,22 @@ export default function ChatBox() {
       // Función para fusionar fragmentos de texto con superposición
       const mergeChunk = (existing, chunk) => {
         if (!existing) return chunk;
+
+        // Evitar duplicados completos
         if (chunk === existing) return existing;
-        130
-
-        // Si el fragmento entrante contiene el texto existente completo,
-        // simplemente devuélvalo.
         if (chunk.includes(existing)) return chunk;
-
-        // Si el texto existente contiene el fragmento entrante completo,
-        // simplemente ignórelo.
         if (existing.includes(chunk)) return existing;
 
-        // Buscar la superposición máxima al final del texto existente
-        const maxCheck = Math.min(100, chunk.length, Math.floor(existing.length / 2));
-        for (let i = maxCheck; i > 0; i--) {
+        // Buscar superposición
+        const maxOverlap = Math.min(chunk.length, existing.length);
+        for (let i = maxOverlap; i > 0; i--) {
           if (existing.endsWith(chunk.slice(0, i))) {
             return existing + chunk.slice(i);
           }
         }
 
-        // Si no hay superposición, simplemente concatene y limpie espacios múltiples
-        const merged = existing + chunk;
-        return merged.replace(/(\s){2,}/g, " ");
+        // Concatenar SIN romper saltos de línea
+        return existing + chunk;
       };
 
       while (true) {
@@ -99,9 +97,40 @@ export default function ChatBox() {
     <div className="chat-box">
       <div className="chat-messages">
         {messages.map((m, i) => (
-          <p key={i} className={`chat-message ${m.role}`}>
-            <strong>{m.role === "user" ? "Tú" : "IA"}:</strong> {m.content}
-          </p>
+          <div key={i} className={`chat-message ${m.role}`}>
+            <div className="chat-message-header">
+              <strong>{m.role === "user" ? "Tú" : "IA"}:</strong>
+            </div>
+            <div className="chat-message-content">
+              {m.role === "assistant" ? (
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code({ inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={oneDark}
+                          language={match[1]}
+                          PreTag="div"
+                        >
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {m.content}
+                </ReactMarkdown>
+              ) : (
+                <span>{m.content}</span>
+              )}
+            </div>
+          </div>
         ))}
         {loading && <p className="chat-typing"><em>Escribiendo...</em></p>}
       </div>
