@@ -1,0 +1,53 @@
+/* Home page styles */
+.home-container{
+  padding: 20px;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: var(--text);
+}
+
+.home-container h1{
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.home-container p{
+  margin: 6px 0;
+  color: var(--muted);
+}
+
+/* prueba */
+.test-btns{
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
+
+.chat-btn{
+  margin-top: 12px;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.logout-btn{
+  margin-top: 12px;
+  padding: 0.6rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.logout-btn:hover{
+  background: var(--focus);
+}
+
+.error-text{
+  color: var(--danger);
+  margin-top: 8px;
+}

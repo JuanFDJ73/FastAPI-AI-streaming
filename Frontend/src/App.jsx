@@ -1,9 +1,24 @@
-function App() {
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import Home from "./pages/Home";
+import Chat from "./pages/Chat";
+
+import "./App.css";
+
+export default function App() {
   return (
-    <div className="App">
-      <h1>Welcome to the FastAPI and React Application</h1>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        {/* RUTAS PROTEGIDAS */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
